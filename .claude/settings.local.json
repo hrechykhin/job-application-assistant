@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker exec:*)",
+      "Bash(chmod +x /Users/vladislavgrechikhin/projects/job-application-assistant/scripts/deploy.sh)"
+    ]
+  }
+}
