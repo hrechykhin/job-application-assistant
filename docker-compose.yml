@@ -30,7 +30,7 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg2://jobuser:jobpass@postgres:5432/jobassist
       SECRET_KEY: ${SECRET_KEY:-dev-secret-key-change-in-production}
-      CORS_ORIGINS: http://localhost:5173,http://localhost:80
+      CORS_ORIGINS: http://localhost:5173,http://localhost
       STORAGE_PATH: /app/uploads
     depends_on:
       postgres:
@@ -47,7 +47,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_BASE_URL: /api/v1
+        VITE_API_BASE_URL: http://localhost:8000/api/v1
     restart: unless-stopped
     ports:
       - "80:80"
