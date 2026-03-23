@@ -72,7 +72,7 @@ export function AITools() {
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm space-y-5">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {tools.map((t) => (
             <button
               key={t.id}
@@ -88,7 +88,7 @@ export function AITools() {
           ))}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label className="mb-1 block text-xs font-medium text-slate-600">Select CV</label>
             <select
@@ -161,7 +161,7 @@ function JobMatchOutput({ result }: { result: JobMatchResult }) {
         <MatchScore score={result.match_score} />
         <p className="flex-1 text-sm text-slate-600">{result.summary}</p>
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-green-700">Matched Skills</p>
           <TagList items={result.matched_skills} color="bg-green-100 text-green-700" />

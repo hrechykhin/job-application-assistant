@@ -43,7 +43,7 @@ function JobForm({ onClose }: { onClose: () => void }) {
             mut.mutate(form)
           }}
         >
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-xs font-medium text-slate-600">Company *</label>
               <input required value={form.company_name} onChange={set('company_name')}
@@ -55,7 +55,7 @@ function JobForm({ onClose }: { onClose: () => void }) {
                 className="input w-full" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-xs font-medium text-slate-600">Location</label>
               <input value={form.location} onChange={set('location')} className="input w-full" />

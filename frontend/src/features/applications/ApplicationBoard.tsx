@@ -166,7 +166,8 @@ export function ApplicationBoard() {
         </div>
       )}
 
-      <div className="grid grid-cols-5 gap-3 overflow-x-auto pb-4">
+      <div className="-mx-1 overflow-x-auto px-1 pb-2">
+      <div className="grid grid-cols-5 gap-3 pb-4 min-w-[700px]">
         {COLUMNS.map((status) => {
           const isOver = overColumn === status
           return (
@@ -227,6 +228,7 @@ export function ApplicationBoard() {
             </div>
           )
         })}
+      </div>
       </div>
     </div>
   )

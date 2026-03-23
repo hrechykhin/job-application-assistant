@@ -6,6 +6,7 @@ import {
   Kanban,
   Sparkles,
   LogOut,
+  X,
 } from 'lucide-react'
 import { useAuth } from '../auth/AuthContext'
 
@@ -17,14 +18,24 @@ const nav = [
   { to: '/ai', label: 'AI Tools', icon: Sparkles },
 ]
 
-export function Sidebar() {
+export function Sidebar({ onClose }: { onClose?: () => void }) {
   const { logout, user } = useAuth()
 
   return (
     <aside className="flex h-screen w-56 flex-col bg-slate-900 text-slate-100">
-      <div className="px-5 py-6">
-        <span className="text-lg font-bold tracking-tight text-white">JobAssist</span>
-        <p className="mt-1 truncate text-xs text-slate-400">{user?.email}</p>
+      <div className="flex items-center justify-between px-5 py-6">
+        <div className="min-w-0">
+          <span className="text-lg font-bold tracking-tight text-white">JobAssist</span>
+          <p className="mt-1 truncate text-xs text-slate-400">{user?.email}</p>
+        </div>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="ml-2 rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white md:hidden"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
       <nav className="flex-1 space-y-1 px-3">
@@ -32,6 +43,7 @@ export function Sidebar() {
           <NavLink
             key={to}
             to={to}
+            onClick={onClose}
             className={({ isActive }) =>
               `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                 isActive
