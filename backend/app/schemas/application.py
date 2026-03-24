@@ -11,6 +11,9 @@ class ApplicationCreate(BaseModel):
     cv_id: int | None = None
     notes: str | None = None
     applied_at: datetime | None = None
+    deadline: datetime | None = None
+    follow_up_date: datetime | None = None
+    interview_at: datetime | None = None
 
 
 class ApplicationUpdate(BaseModel):
@@ -18,6 +21,9 @@ class ApplicationUpdate(BaseModel):
     notes: str | None = None
     cv_id: int | None = None
     applied_at: datetime | None = None
+    deadline: datetime | None = None
+    follow_up_date: datetime | None = None
+    interview_at: datetime | None = None
 
 
 class ApplicationRead(BaseModel):
@@ -30,6 +36,9 @@ class ApplicationRead(BaseModel):
     status: ApplicationStatus
     notes: str | None
     applied_at: datetime | None
+    deadline: datetime | None
+    follow_up_date: datetime | None
+    interview_at: datetime | None
     created_at: datetime
     updated_at: datetime
 

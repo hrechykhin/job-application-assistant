@@ -12,8 +12,8 @@ export const cvsApi = {
     }).then((r) => r.data)
   },
 
-  getDownloadUrl: (cvId: number) =>
-    apiClient.get<{ url: string }>(`/cvs/${cvId}/download-url`).then((r) => r.data.url),
+  download: (cvId: number) =>
+    apiClient.get(`/cvs/download/${cvId}`, { responseType: 'blob' }).then((r) => r.data as Blob),
 
   delete: (cvId: number) => apiClient.delete(`/cvs/${cvId}`),
 }

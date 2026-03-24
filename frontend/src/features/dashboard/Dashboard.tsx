@@ -1,9 +1,12 @@
+import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
+import { Calendar } from 'lucide-react'
 import { applicationsApi } from '../../api/applications'
 import { useAuth } from '../../auth/AuthContext'
 import { LoadingSpinner } from '../../components/LoadingSpinner'
-import { formatPercent, STATUS_LABELS } from '../../utils/formatters'
+import { formatDate, STATUS_LABELS, STATUS_COLORS } from '../../utils/formatters'
+import type { Application } from '../../types'
 
 const STATUS_CHART_COLORS: Record<string, string> = {
   SAVED: '#94a3b8',
@@ -22,11 +25,58 @@ function StatCard({ label, value }: { label: string; value: string | number }) {
   )
 }
 
+function UpcomingItem({ app, label, date }: { app: Application; label: string; date: string }) {
+  return (
+    <Link
+      to={`/applications/${app.id}`}
+      className="flex items-center justify-between rounded-lg border border-slate-100 bg-white px-4 py-3 hover:border-brand-300 transition-colors"
+    >
+      <div className="min-w-0">
+        <p className="truncate text-sm font-medium text-slate-900">{app.job?.title ?? 'Application'}</p>
+        <p className="text-xs text-slate-500">{app.job?.company_name}</p>
+      </div>
+      <div className="ml-4 shrink-0 text-right">
+        <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[app.status]}`}>
+          {label}
+        </span>
+        <p className="mt-0.5 text-xs text-slate-400">{formatDate(date)}</p>
+      </div>
+    </Link>
+  )
+}
+
+function getUpcoming(applications: Application[]): { app: Application; label: string; date: string }[] {
+  const now = new Date()
+  const cutoff = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+  const items: { app: Application; label: string; date: string; ts: number }[] = []
+
+  for (const app of applications) {
+    if (app.interview_at) {
+      const d = new Date(app.interview_at)
+      if (d >= now && d <= cutoff) items.push({ app, label: 'Interview', date: app.interview_at, ts: d.getTime() })
+    }
+    if (app.deadline) {
+      const d = new Date(app.deadline)
+      if (d >= now && d <= cutoff) items.push({ app, label: 'Deadline', date: app.deadline, ts: d.getTime() })
+    }
+    if (app.follow_up_date) {
+      const d = new Date(app.follow_up_date)
+      if (d >= now && d <= cutoff) items.push({ app, label: 'Follow up', date: app.follow_up_date, ts: d.getTime() })
+    }
+  }
+
+  return items.sort((a, b) => a.ts - b.ts).map(({ app, label, date }) => ({ app, label, date }))
+}
+
 export function Dashboard() {
   const { user } = useAuth()
-  const { data: stats, isLoading } = useQuery({
+  const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['application-stats'],
     queryFn: applicationsApi.stats,
+  })
+  const { data: applications } = useQuery({
+    queryKey: ['applications'],
+    queryFn: applicationsApi.list,
   })
 
   const chartData = stats
@@ -37,6 +87,8 @@ export function Dashboard() {
       }))
     : []
 
+  const upcoming = applications ? getUpcoming(applications) : []
+
   return (
     <div className="space-y-6">
       <div>
@@ -46,16 +98,30 @@ export function Dashboard() {
         <p className="text-sm text-slate-500">Here's your application overview</p>
       </div>
 
-      {isLoading ? (
+      {statsLoading ? (
         <LoadingSpinner />
       ) : stats ? (
         <>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <StatCard label="Total Applications" value={stats.total} />
             <StatCard label="Applied" value={stats.by_status['APPLIED'] ?? 0} />
-            <StatCard label="Interview Rate" value={formatPercent(stats.interview_rate)} />
-            <StatCard label="Offer Rate" value={formatPercent(stats.offer_rate)} />
+            <StatCard label="Interview Rate" value={`${Math.round(stats.interview_rate * 100)}%`} />
+            <StatCard label="Offer Rate" value={`${Math.round(stats.offer_rate * 100)}%`} />
           </div>
+
+          {upcoming.length > 0 && (
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
+              <div className="mb-3 flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-slate-500" />
+                <h2 className="text-sm font-semibold text-slate-700">Upcoming (next 7 days)</h2>
+              </div>
+              <div className="space-y-2">
+                {upcoming.map(({ app, label, date }) => (
+                  <UpcomingItem key={`${app.id}-${label}`} app={app} label={label} date={date} />
+                ))}
+              </div>
+            </div>
+          )}
 
           {chartData.length > 0 && (
             <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">

@@ -10,6 +10,7 @@ import { CVLibrary } from './features/cvs/CVLibrary'
 import { JobTracker } from './features/jobs/JobTracker'
 import { JobDetail } from './features/jobs/JobDetail'
 import { ApplicationBoard } from './features/applications/ApplicationBoard'
+import { ApplicationWorkspace } from './features/applications/ApplicationWorkspace'
 import { AITools } from './features/ai/AITools'
 
 const queryClient = new QueryClient({
@@ -39,6 +40,7 @@ export default function App() {
               <Route path="/jobs" element={<JobTracker />} />
               <Route path="/jobs/:jobId" element={<JobDetail />} />
               <Route path="/applications" element={<ApplicationBoard />} />
+              <Route path="/applications/:appId" element={<ApplicationWorkspace />} />
               <Route path="/ai" element={<AITools />} />
             </Route>
             <Route path="*" element={<Navigate to="/dashboard" replace />} />

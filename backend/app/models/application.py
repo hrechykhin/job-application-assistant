@@ -30,6 +30,9 @@ class Application(Base, TimestampMixin):
     )
     notes: Mapped[str | None] = mapped_column(Text)
     applied_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    deadline: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    follow_up_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    interview_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     user: Mapped["User"] = relationship("User", back_populates="applications")
     job: Mapped["Job"] = relationship("Job", back_populates="applications")

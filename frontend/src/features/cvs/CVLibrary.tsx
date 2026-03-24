@@ -37,11 +37,13 @@ export function CVLibrary() {
   }
 
   const handleDownload = async (cvId: number, filename: string) => {
-    const url = await cvsApi.getDownloadUrl(cvId)
+    const blob = await cvsApi.download(cvId)
+    const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
     a.download = filename
     a.click()
+    URL.revokeObjectURL(url)
   }
 
   return (

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Plus, Briefcase, Trash2, ExternalLink } from 'lucide-react'
+import { Plus, Briefcase, Trash2, ExternalLink, Link2 } from 'lucide-react'
 import { jobsApi, type JobCreatePayload } from '../../api/jobs'
 import { LoadingSpinner } from '../../components/LoadingSpinner'
 import { ErrorMessage } from '../../components/ErrorMessage'
@@ -17,6 +17,9 @@ function JobForm({ onClose }: { onClose: () => void }) {
     description: '',
   })
   const [error, setError] = useState('')
+  const [importUrl, setImportUrl] = useState('')
+  const [importing, setImporting] = useState(false)
+  const [importError, setImportError] = useState('')
 
   const mut = useMutation({
     mutationFn: jobsApi.create,
@@ -27,6 +30,29 @@ function JobForm({ onClose }: { onClose: () => void }) {
     onError: () => setError('Failed to save job.'),
   })
 
+  const handleImport = async () => {
+    if (!importUrl) return
+    setImporting(true)
+    setImportError('')
+    try {
+      const preview = await jobsApi.importFromUrl(importUrl)
+      setForm((f) => ({
+        ...f,
+        title: preview.title,
+        company_name: preview.company_name,
+        location: preview.location ?? '',
+        job_url: importUrl,
+        description: preview.description,
+      }))
+      setImportUrl('')
+    } catch (e: unknown) {
+      const msg = (e as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      setImportError(msg ?? 'Failed to import from URL.')
+    } finally {
+      setImporting(false)
+    }
+  }
+
   const set = (field: keyof JobCreatePayload) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => setForm((f) => ({ ...f, [field]: e.target.value }))
@@ -35,6 +61,35 @@ function JobForm({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
         <h2 className="mb-4 text-lg font-semibold text-slate-900">Add Job</h2>
+
+        {/* URL import */}
+        <div className="mb-4 rounded-lg bg-slate-50 p-3 space-y-2">
+          <p className="text-xs font-medium text-slate-600">Import from URL (optional)</p>
+          <div className="flex gap-2">
+            <input
+              type="url"
+              placeholder="https://..."
+              value={importUrl}
+              onChange={(e) => setImportUrl(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleImport())}
+              className="input flex-1 text-sm"
+            />
+            <button
+              type="button"
+              onClick={handleImport}
+              disabled={importing || !importUrl}
+              className="flex items-center gap-1.5 rounded-lg bg-slate-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800 disabled:opacity-50 transition-colors"
+            >
+              <Link2 className="h-3 w-3" />
+              {importing ? 'Importing…' : 'Import'}
+            </button>
+          </div>
+          {importError && <p className="text-xs text-red-600">{importError}</p>}
+          {!importError && (
+            <p className="text-xs text-slate-400">Paste a job posting URL to auto-fill the form below.</p>
+          )}
+        </div>
+
         {error && <ErrorMessage message={error} />}
         <form
           className="space-y-3"
@@ -92,7 +147,11 @@ export function JobTracker() {
   const { data: jobs, isLoading, error } = useQuery({ queryKey: ['jobs'], queryFn: jobsApi.list })
   const deleteMut = useMutation({
     mutationFn: jobsApi.delete,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['jobs'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['jobs'] })
+      qc.invalidateQueries({ queryKey: ['applications'] })
+      qc.invalidateQueries({ queryKey: ['application-stats'] })
+    },
   })
 
   return (

@@ -4,10 +4,23 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_current_user
 from app.db.session import get_db
 from app.models.user import User
-from app.schemas.job import JobCreate, JobRead, JobUpdate
+from app.schemas.job import JobCreate, JobImportPreview, JobImportRequest, JobRead, JobUpdate
+from app.services.ai_service import AIService
 from app.services.job_service import JobService
 
 router = APIRouter(prefix="/jobs", tags=["jobs"])
+
+
+@router.post("/import-url", response_model=JobImportPreview)
+def import_job_from_url(
+    body: JobImportRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    svc = AIService(db)
+    result = svc.import_job_from_url(current_user.id, body.url)
+    db.commit()
+    return result
 
 
 @router.get("", response_model=list[JobRead])

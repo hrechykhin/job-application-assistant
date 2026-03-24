@@ -26,10 +26,16 @@ class Settings(BaseSettings):
     # File storage (local volume — Railway mounts this as a persistent volume)
     STORAGE_PATH: str = "/app/uploads"
 
-    # AI
+    # AI provider
     OPENAI_API_KEY: str = ""
     OPENAI_BASE_URL: str = "https://api.openai.com/v1"
     OPENAI_MODEL: str = "gpt-4o-mini"
+
+    # AI spend control
+    AI_ENABLED: bool = True
+    AI_MAX_REQUESTS_PER_DAY: int = 50
+    AI_MAX_CV_CHARS: int = 6000
+    AI_MAX_JOB_CHARS: int = 4000
 
     # CORS
     CORS_ORIGINS: str = "http://localhost:5173"

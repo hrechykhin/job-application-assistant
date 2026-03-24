@@ -1,13 +1,25 @@
 import { apiClient } from './client'
 import type { Application, ApplicationStats, ApplicationStatus } from '../types'
 
+export interface ApplicationUpdatePayload {
+  status?: ApplicationStatus
+  notes?: string | null
+  cv_id?: number | null
+  applied_at?: string | null
+  deadline?: string | null
+  follow_up_date?: string | null
+  interview_at?: string | null
+}
+
 export const applicationsApi = {
   list: () => apiClient.get<Application[]>('/applications').then((r) => r.data),
+
+  get: (appId: number) => apiClient.get<Application>(`/applications/${appId}`).then((r) => r.data),
 
   create: (data: { job_id: number; cv_id?: number; notes?: string }) =>
     apiClient.post<Application>('/applications', data).then((r) => r.data),
 
-  update: (appId: number, data: { status?: ApplicationStatus; notes?: string; cv_id?: number }) =>
+  update: (appId: number, data: ApplicationUpdatePayload) =>
     apiClient.patch<Application>(`/applications/${appId}`, data).then((r) => r.data),
 
   delete: (appId: number) => apiClient.delete(`/applications/${appId}`),

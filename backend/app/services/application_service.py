@@ -17,6 +17,9 @@ class ApplicationService:
             cv_id=data.cv_id,
             notes=data.notes,
             applied_at=data.applied_at,
+            deadline=data.deadline,
+            follow_up_date=data.follow_up_date,
+            interview_at=data.interview_at,
         )
 
     def list_for_user(self, user_id: int) -> list[Application]:
@@ -30,8 +33,7 @@ class ApplicationService:
 
     def update(self, app_id: int, user_id: int, data: ApplicationUpdate) -> Application:
         app = self.get_or_404(app_id, user_id)
-        updates = {k: v for k, v in data.model_dump().items() if v is not None}
-        return self.repo.update(app, **updates)
+        return self.repo.update(app, **data.model_dump(exclude_unset=True))
 
     def delete(self, app_id: int, user_id: int) -> None:
         app = self.get_or_404(app_id, user_id)

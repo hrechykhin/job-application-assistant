@@ -37,9 +37,19 @@ export interface Application {
   status: ApplicationStatus
   notes: string | null
   applied_at: string | null
+  deadline: string | null
+  follow_up_date: string | null
+  interview_at: string | null
   created_at: string
   updated_at: string
   job?: Job
+}
+
+export interface JobImportPreview {
+  title: string
+  company_name: string
+  location: string | null
+  description: string
 }
 
 export interface ApplicationStats {

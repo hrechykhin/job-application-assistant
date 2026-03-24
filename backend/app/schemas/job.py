@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, HttpUrl, field_validator
 
 
 class JobCreate(BaseModel):
@@ -17,6 +17,24 @@ class JobUpdate(BaseModel):
     location: str | None = None
     job_url: str | None = None
     description: str | None = None
+
+
+class JobImportRequest(BaseModel):
+    url: str
+
+    @field_validator("url")
+    @classmethod
+    def must_be_http(cls, v: str) -> str:
+        if not v.startswith(("http://", "https://")):
+            raise ValueError("URL must start with http:// or https://")
+        return v
+
+
+class JobImportPreview(BaseModel):
+    title: str
+    company_name: str
+    location: str | None = None
+    description: str
 
 
 class JobRead(BaseModel):

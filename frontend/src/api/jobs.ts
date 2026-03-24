@@ -1,5 +1,5 @@
 import { apiClient } from './client'
-import type { Job } from '../types'
+import type { Job, JobImportPreview } from '../types'
 
 export interface JobCreatePayload {
   company_name: string
@@ -20,4 +20,7 @@ export const jobsApi = {
     apiClient.patch<Job>(`/jobs/${jobId}`, data).then((r) => r.data),
 
   delete: (jobId: number) => apiClient.delete(`/jobs/${jobId}`),
+
+  importFromUrl: (url: string) =>
+    apiClient.post<JobImportPreview>('/jobs/import-url', { url }).then((r) => r.data),
 }

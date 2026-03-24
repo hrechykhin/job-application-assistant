@@ -30,13 +30,26 @@ class ApplicationRepository:
             )
         )
 
-    def create(self, user_id: int, job_id: int, cv_id: int | None, notes: str | None, applied_at: datetime | None) -> Application:
+    def create(
+        self,
+        user_id: int,
+        job_id: int,
+        cv_id: int | None,
+        notes: str | None,
+        applied_at: datetime | None,
+        deadline: datetime | None = None,
+        follow_up_date: datetime | None = None,
+        interview_at: datetime | None = None,
+    ) -> Application:
         app = Application(
             user_id=user_id,
             job_id=job_id,
             cv_id=cv_id,
             notes=notes,
             applied_at=applied_at,
+            deadline=deadline,
+            follow_up_date=follow_up_date,
+            interview_at=interview_at,
             status=ApplicationStatus.SAVED,
         )
         self.db.add(app)

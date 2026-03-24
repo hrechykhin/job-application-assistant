@@ -1,11 +1,12 @@
 import { useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { applicationsApi } from '../../api/applications'
 import { LoadingSpinner } from '../../components/LoadingSpinner'
 import { ErrorMessage } from '../../components/ErrorMessage'
 import { formatDate, STATUS_LABELS } from '../../utils/formatters'
 import type { Application, ApplicationStatus } from '../../types'
-import { Trash2, ChevronRight } from 'lucide-react'
+import { Trash2, ChevronRight, Calendar } from 'lucide-react'
 
 const COLUMNS: ApplicationStatus[] = ['SAVED', 'APPLIED', 'INTERVIEW', 'OFFER', 'REJECTED']
 
@@ -63,11 +64,25 @@ function AppCard({
         isDragging ? 'opacity-40' : 'opacity-100'
       }`}
     >
-      <p className="text-sm font-medium text-slate-900 truncate">{app.job?.title ?? 'Unknown role'}</p>
+      <Link to={`/applications/${app.id}`} className="block hover:text-brand-600" onClick={(e) => e.stopPropagation()}>
+        <p className="text-sm font-medium text-slate-900 truncate hover:text-brand-600">{app.job?.title ?? 'Unknown role'}</p>
+      </Link>
       <p className="text-xs text-slate-500 truncate">{app.job?.company_name}</p>
       {app.job?.location && <p className="text-xs text-slate-400">{app.job.location}</p>}
       <p className="text-xs text-slate-400">{formatDate(app.updated_at)}</p>
       {app.notes && <p className="text-xs text-slate-500 italic line-clamp-2">{app.notes}</p>}
+      {app.interview_at && (
+        <p className="flex items-center gap-1 text-xs text-yellow-700">
+          <Calendar className="h-3 w-3" />
+          Interview {formatDate(app.interview_at)}
+        </p>
+      )}
+      {app.deadline && (
+        <p className="flex items-center gap-1 text-xs text-red-600">
+          <Calendar className="h-3 w-3" />
+          Deadline {formatDate(app.deadline)}
+        </p>
+      )}
       <div className="flex items-center justify-between pt-1">
         {onAdvance ? (
           <button

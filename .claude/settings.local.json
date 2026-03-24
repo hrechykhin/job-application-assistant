@@ -3,7 +3,11 @@
     "allow": [
       "Bash(docker exec:*)",
       "Bash(chmod +x /Users/vladislavgrechikhin/projects/job-application-assistant/scripts/deploy.sh)",
-      "WebFetch(domain:accurate-grace-production-abf0.up.railway.app)"
+      "WebFetch(domain:accurate-grace-production-abf0.up.railway.app)",
+      "Bash(python -m pytest tests/ -v)",
+      "Bash(python -m venv .venv)",
+      "Bash(source .venv/bin/activate)",
+      "Bash(pip install:*)"
     ]
   }
 }
