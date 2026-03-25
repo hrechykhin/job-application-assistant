@@ -1,4 +1,4 @@
-# Environment files — never commit real secrets
+# Secrets — never commit
 .env
 .env.prod
 backend/.env
@@ -7,11 +7,19 @@ backend/.env.prod
 # Frontend build output
 frontend/dist/
 frontend/node_modules/
+node_modules/
 
 # Python
 __pycache__/
 *.pyc
+*.pyo
 .venv/
+.pytest_cache/
 
-# macOS
+# CV uploads (local dev data)
+backend/uploads/
+
+# IDE / tooling
+.claude/
 .DS_Store
+*.swp
