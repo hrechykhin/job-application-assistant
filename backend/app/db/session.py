@@ -9,11 +9,7 @@ _is_sqlite = settings.DATABASE_URL.startswith("sqlite")
 engine = create_engine(
     settings.DATABASE_URL,
     # SQLite does not support server-side connection pooling
-    **(
-        {}
-        if _is_sqlite
-        else {"pool_pre_ping": True, "pool_size": 10, "max_overflow": 20}
-    ),
+    **({} if _is_sqlite else {"pool_pre_ping": True, "pool_size": 10, "max_overflow": 20}),
 )
 
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
