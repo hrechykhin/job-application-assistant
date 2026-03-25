@@ -37,7 +37,10 @@ function JobMatchPanel({ cvId, jobId }: { cvId: number | null; jobId: number }) 
     if (!cvId) { setError('Select a CV first.'); return }
     setRunning(true); setError('')
     try { setResult(await aiApi.jobMatch(cvId, jobId)) }
-    catch { setError('AI request failed.') }
+    catch (e: unknown) {
+      const msg = (e as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      setError(msg ?? 'AI request failed.')
+    }
     finally { setRunning(false) }
   }
 
@@ -102,7 +105,10 @@ function CVTailoringPanel({ cvId, jobId }: { cvId: number | null; jobId: number 
     if (!cvId) { setError('Select a CV first.'); return }
     setRunning(true); setError('')
     try { setResult(await aiApi.cvTailoring(cvId, jobId)) }
-    catch { setError('AI request failed.') }
+    catch (e: unknown) {
+      const msg = (e as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      setError(msg ?? 'AI request failed.')
+    }
     finally { setRunning(false) }
   }
 
@@ -162,7 +168,10 @@ function CoverLetterPanel({ cvId, jobId }: { cvId: number | null; jobId: number 
     if (!cvId) { setError('Select a CV first.'); return }
     setRunning(true); setError('')
     try { setResult(await aiApi.coverLetter(cvId, jobId, tone)) }
-    catch { setError('AI request failed.') }
+    catch (e: unknown) {
+      const msg = (e as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      setError(msg ?? 'AI request failed.')
+    }
     finally { setRunning(false) }
   }
 
