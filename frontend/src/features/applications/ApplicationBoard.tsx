@@ -46,6 +46,9 @@ function AppCard({
   onDelete,
   onDragStart,
   onDragEnd,
+  onTouchStart,
+  onTouchMove,
+  onTouchEnd,
   isDragging,
 }: {
   app: Application
@@ -53,6 +56,9 @@ function AppCard({
   onDelete: () => void
   onDragStart: () => void
   onDragEnd: () => void
+  onTouchStart: (e: React.TouchEvent<HTMLDivElement>) => void
+  onTouchMove: (e: React.TouchEvent<HTMLDivElement>) => void
+  onTouchEnd: (e: React.TouchEvent<HTMLDivElement>) => void
   isDragging: boolean
 }) {
   return (
@@ -60,7 +66,10 @@ function AppCard({
       draggable
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
-      className={`rounded-lg border border-white bg-white p-3 shadow-sm space-y-1 cursor-grab active:cursor-grabbing transition-opacity ${
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      className={`touch-none rounded-lg border border-white bg-white p-3 shadow-sm space-y-1 cursor-grab active:cursor-grabbing transition-opacity ${
         isDragging ? 'opacity-40' : 'opacity-100'
       }`}
     >
@@ -111,6 +120,8 @@ export function ApplicationBoard() {
   const [draggedId, setDraggedId] = useState<number | null>(null)
   const [overColumn, setOverColumn] = useState<ApplicationStatus | null>(null)
   const dragCounter = useRef<Record<string, number>>({})
+  // Ref to the card element being touch-dragged, used for hit-testing underneath it
+  const touchCardRef = useRef<HTMLDivElement | null>(null)
 
   const { data: applications, isLoading, error } = useQuery({
     queryKey: ['applications'],
@@ -168,6 +179,39 @@ export function ApplicationBoard() {
     dragCounter.current = {}
   }
 
+  /** Temporarily hide the card so elementFromPoint can see what's underneath. */
+  const columnUnderPoint = (x: number, y: number): ApplicationStatus | null => {
+    const card = touchCardRef.current
+    if (card) card.style.visibility = 'hidden'
+    const el = document.elementFromPoint(x, y)
+    if (card) card.style.visibility = ''
+    return (el?.closest('[data-status]')?.getAttribute('data-status') ?? null) as ApplicationStatus | null
+  }
+
+  const handleTouchStart = (appId: number) => (e: React.TouchEvent<HTMLDivElement>) => {
+    setDraggedId(appId)
+    touchCardRef.current = e.currentTarget
+  }
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchCardRef.current) return
+    const { clientX, clientY } = e.touches[0]
+    setOverColumn(columnUnderPoint(clientX, clientY))
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    const { clientX, clientY } = e.changedTouches[0]
+    const targetStatus = columnUnderPoint(clientX, clientY)
+    if (targetStatus) {
+      handleDrop(targetStatus)
+    } else {
+      setDraggedId(null)
+      setOverColumn(null)
+      dragCounter.current = {}
+    }
+    touchCardRef.current = null
+  }
+
   return (
     <div className="space-y-4">
       <div>
@@ -188,6 +232,7 @@ export function ApplicationBoard() {
           return (
             <div
               key={status}
+              data-status={status}
               className={`rounded-xl border p-3 transition-all ${
                 isOver ? COLUMN_DRAG_OVER_STYLES[status] : COLUMN_STYLES[status]
               }`}
@@ -229,6 +274,9 @@ export function ApplicationBoard() {
                       setOverColumn(null)
                       dragCounter.current = {}
                     }}
+                    onTouchStart={handleTouchStart(app.id)}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
                     onAdvance={
                       NEXT_STATUS[status]
                         ? () => updateMut.mutate({ id: app.id, status: NEXT_STATUS[status]! })
