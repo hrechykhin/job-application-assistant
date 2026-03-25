@@ -17,7 +17,11 @@ class JobRepository:
     def list_by_user(self, user_id: int, limit: int = 100, offset: int = 0) -> list[Job]:
         return list(
             self.db.scalars(
-                select(Job).where(Job.user_id == user_id).order_by(Job.created_at.desc()).limit(limit).offset(offset)
+                select(Job)
+                .where(Job.user_id == user_id)
+                .order_by(Job.created_at.desc())
+                .limit(limit)
+                .offset(offset)
             )
         )
 

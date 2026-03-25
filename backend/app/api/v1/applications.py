@@ -4,14 +4,22 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_current_user
 from app.db.session import get_db
 from app.models.user import User
-from app.schemas.application import ApplicationCreate, ApplicationRead, ApplicationReadWithJob, ApplicationStats, ApplicationUpdate
+from app.schemas.application import (
+    ApplicationCreate,
+    ApplicationRead,
+    ApplicationReadWithJob,
+    ApplicationStats,
+    ApplicationUpdate,
+)
 from app.services.application_service import ApplicationService
 
 router = APIRouter(prefix="/applications", tags=["applications"])
 
 
 @router.get("", response_model=list[ApplicationReadWithJob])
-def list_applications(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def list_applications(
+    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+):
     svc = ApplicationService(db)
     return svc.list_for_user(current_user.id)
 
@@ -36,7 +44,9 @@ def get_stats(current_user: User = Depends(get_current_user), db: Session = Depe
 
 
 @router.get("/{app_id}", response_model=ApplicationReadWithJob)
-def get_application(app_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def get_application(
+    app_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+):
     svc = ApplicationService(db)
     return svc.get_or_404(app_id, current_user.id)
 
@@ -56,7 +66,9 @@ def update_application(
 
 
 @router.delete("/{app_id}", status_code=204)
-def delete_application(app_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def delete_application(
+    app_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+):
     svc = ApplicationService(db)
     svc.delete(app_id, current_user.id)
     db.commit()

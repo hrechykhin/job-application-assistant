@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -11,10 +11,14 @@ class AIUsageLogRepository:
         self.db = db
 
     def count_today(self, user_id: int) -> int:
-        start_of_day = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-        stmt = select(func.count()).select_from(AIUsageLog).where(
-            AIUsageLog.user_id == user_id,
-            AIUsageLog.created_at >= start_of_day,
+        start_of_day = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0)
+        stmt = (
+            select(func.count())
+            .select_from(AIUsageLog)
+            .where(
+                AIUsageLog.user_id == user_id,
+                AIUsageLog.created_at >= start_of_day,
+            )
         )
         return self.db.execute(stmt).scalar_one()
 

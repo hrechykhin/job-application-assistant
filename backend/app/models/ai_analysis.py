@@ -1,13 +1,13 @@
-import enum
 from datetime import datetime
+from enum import StrEnum
 
-from sqlalchemy import JSON, DateTime, Enum, ForeignKey, Integer, String, func
+from sqlalchemy import JSON, DateTime, Enum, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
 
-class AnalysisType(str, enum.Enum):
+class AnalysisType(StrEnum):
     JOB_MATCH = "JOB_MATCH"
     CV_TAILORING = "CV_TAILORING"
     COVER_LETTER = "COVER_LETTER"
@@ -17,7 +17,9 @@ class AIAnalysis(Base):
     __tablename__ = "ai_analyses"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
     job_id: Mapped[int] = mapped_column(ForeignKey("jobs.id", ondelete="CASCADE"), nullable=False)
     cv_id: Mapped[int] = mapped_column(ForeignKey("cvs.id", ondelete="CASCADE"), nullable=False)
     analysis_type: Mapped[AnalysisType] = mapped_column(

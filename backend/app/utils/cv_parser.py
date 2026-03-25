@@ -8,7 +8,10 @@ from io import BytesIO
 
 logger = logging.getLogger(__name__)
 
-ALLOWED_MIME_TYPES = {"application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"}
+ALLOWED_MIME_TYPES = {
+    "application/pdf",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+}
 ALLOWED_EXTENSIONS = {".pdf", ".docx"}
 MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024  # 10 MB
 
@@ -54,4 +57,6 @@ def validate_upload(filename: str, content_type: str, size: int) -> None:
     if ext not in ALLOWED_EXTENSIONS:
         raise ValueError(f"Only PDF and DOCX files are accepted. Got: {ext}")
     if size > MAX_FILE_SIZE_BYTES:
-        raise ValueError(f"File too large. Maximum size is {MAX_FILE_SIZE_BYTES // (1024*1024)} MB.")
+        raise ValueError(
+            f"File too large. Maximum size is {MAX_FILE_SIZE_BYTES // (1024 * 1024)} MB."
+        )

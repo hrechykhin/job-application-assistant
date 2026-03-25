@@ -20,7 +20,9 @@ class AuthService:
 
     def register(self, email: str, password: str, full_name: str | None = None) -> User:
         if self.repo.get_by_email(email):
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered.")
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT, detail="Email already registered."
+            )
         user = self.repo.create(
             email=email,
             hashed_password=hash_password(password),
@@ -37,7 +39,9 @@ class AuthService:
                 headers={"WWW-Authenticate": "Bearer"},
             )
         if not user.is_active:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account is inactive.")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Account is inactive."
+            )
         return TokenResponse(
             access_token=create_access_token(user.id),
             refresh_token=create_refresh_token(user.id),
@@ -50,7 +54,9 @@ class AuthService:
                 raise ValueError
             user_id = int(payload["sub"])
         except (JWTError, ValueError, KeyError):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token.")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token."
+            )
 
         user = self.repo.get_by_id(user_id)
         if not user or not user.is_active:

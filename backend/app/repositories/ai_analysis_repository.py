@@ -8,7 +8,9 @@ class AIAnalysisRepository:
     def __init__(self, db: Session) -> None:
         self.db = db
 
-    def get_cached(self, user_id: int, job_id: int, cv_id: int, analysis_type: AnalysisType) -> AIAnalysis | None:
+    def get_cached(
+        self, user_id: int, job_id: int, cv_id: int, analysis_type: AnalysisType
+    ) -> AIAnalysis | None:
         return self.db.scalar(
             select(AIAnalysis)
             .where(

@@ -1,15 +1,14 @@
 """Tests for AI quota enforcement and usage logging."""
-from unittest.mock import MagicMock, patch
 
-import pytest
+from unittest.mock import MagicMock, patch
 
 from app.integrations.ai_client import AIResponse
 from app.models.ai_usage_log import AIUsageLog
 from app.models.cv import CV
 from app.models.job import Job
 
-
 # ── fixtures ──────────────────────────────────────────────────────────────────
+
 
 def _register_and_login(client, email="ai@example.com", password="secret123"):
     client.post("/api/v1/auth/register", json={"email": email, "password": password})
@@ -26,14 +25,21 @@ def _get_user_id(client, token):
 
 
 def _create_cv(db, user_id, text="Python developer with 5 years of experience building APIs."):
-    cv = CV(user_id=user_id, original_filename="cv.pdf", file_key=f"cvs/{user_id}/cv.pdf", extracted_text=text)
+    cv = CV(
+        user_id=user_id,
+        original_filename="cv.pdf",
+        file_key=f"cvs/{user_id}/cv.pdf",
+        extracted_text=text,
+    )
     db.add(cv)
     db.flush()
     return cv
 
 
 def _create_job(db, user_id, description="We need a Python developer."):
-    job = Job(user_id=user_id, company_name="Test Co", title="Backend Engineer", description=description)
+    job = Job(
+        user_id=user_id, company_name="Test Co", title="Backend Engineer", description=description
+    )
     db.add(job)
     db.flush()
     return job
@@ -64,6 +70,7 @@ def _make_mock_client(data: dict) -> MagicMock:
 
 
 # ── tests ─────────────────────────────────────────────────────────────────────
+
 
 def test_ai_disabled_returns_503(client, db):
     token = _register_and_login(client)

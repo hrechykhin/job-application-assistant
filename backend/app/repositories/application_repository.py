@@ -75,7 +75,9 @@ class ApplicationRepository:
 
         by_status = {r[0].value: r[1] for r in rows}
         total = sum(by_status.values())
-        applied = sum(v for k, v in by_status.items() if k in ("APPLIED", "INTERVIEW", "OFFER", "REJECTED"))
+        applied = sum(
+            v for k, v in by_status.items() if k in ("APPLIED", "INTERVIEW", "OFFER", "REJECTED")
+        )
         interviews = by_status.get("INTERVIEW", 0) + by_status.get("OFFER", 0)
         offers = by_status.get("OFFER", 0)
 

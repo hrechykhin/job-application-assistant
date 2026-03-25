@@ -1,0 +1,32 @@
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = [
+    "E501",  # line too long — formatter handles this
+    "N818",  # exception names not ending in Error
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/*.py" = ["S101"]
+# SQLAlchemy uses string forward references in Mapped[] that ruff can't resolve
+"**/models/*.py" = ["F821"]
+# Alembic auto-generated migrations use legacy patterns — ignore all upgrade rules
+"**/alembic/**/*.py" = ["UP"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "strict"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+disallow_untyped_defs = false
+warn_unused_ignores = true
+warn_return_any = false
+
+[[tool.mypy.overrides]]
+module = ["passlib.*", "jose.*", "pdfminer.*", "docx.*", "slowapi.*"]
+ignore_missing_imports = true

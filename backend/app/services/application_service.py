@@ -28,7 +28,9 @@ class ApplicationService:
     def get_or_404(self, app_id: int, user_id: int) -> Application:
         app = self.repo.get_by_id_and_user(app_id, user_id)
         if not app:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Application not found.")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Application not found."
+            )
         return app
 
     def update(self, app_id: int, user_id: int, data: ApplicationUpdate) -> Application:

@@ -1,12 +1,11 @@
 import pytest
+from app.db.base import Base
+from app.db.session import get_db
+from app.main import app
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
-
-from app.db.base import Base
-from app.db.session import get_db
-from app.main import app
 
 # Use in-memory SQLite for tests
 TEST_DATABASE_URL = "sqlite://"
@@ -39,6 +38,9 @@ def client(db):
             pass
 
     app.dependency_overrides[get_db] = override_get_db
+    # Disable rate limiting so tests never hit 429
+    app.state.limiter.enabled = False
     with TestClient(app) as c:
         yield c
+    app.state.limiter.enabled = True
     app.dependency_overrides.clear()

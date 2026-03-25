@@ -1,6 +1,3 @@
-import pytest
-
-
 def test_register_success(client):
     response = client.post(
         "/api/v1/auth/register",
@@ -21,8 +18,12 @@ def test_register_duplicate_email(client):
 
 
 def test_login_success(client):
-    client.post("/api/v1/auth/register", json={"email": "user@example.com", "password": "mypassword"})
-    response = client.post("/api/v1/auth/login", json={"email": "user@example.com", "password": "mypassword"})
+    client.post(
+        "/api/v1/auth/register", json={"email": "user@example.com", "password": "mypassword"}
+    )
+    response = client.post(
+        "/api/v1/auth/login", json={"email": "user@example.com", "password": "mypassword"}
+    )
     assert response.status_code == 200
     data = response.json()
     assert "access_token" in data
@@ -32,13 +33,17 @@ def test_login_success(client):
 
 def test_login_wrong_password(client):
     client.post("/api/v1/auth/register", json={"email": "user2@example.com", "password": "correct"})
-    response = client.post("/api/v1/auth/login", json={"email": "user2@example.com", "password": "wrong"})
+    response = client.post(
+        "/api/v1/auth/login", json={"email": "user2@example.com", "password": "wrong"}
+    )
     assert response.status_code == 401
 
 
 def test_me_endpoint(client):
     client.post("/api/v1/auth/register", json={"email": "me@example.com", "password": "pass123"})
-    login = client.post("/api/v1/auth/login", json={"email": "me@example.com", "password": "pass123"})
+    login = client.post(
+        "/api/v1/auth/login", json={"email": "me@example.com", "password": "pass123"}
+    )
     token = login.json()["access_token"]
     response = client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
@@ -51,8 +56,12 @@ def test_me_unauthenticated(client):
 
 
 def test_refresh_token(client):
-    client.post("/api/v1/auth/register", json={"email": "refresh@example.com", "password": "pass123"})
-    login = client.post("/api/v1/auth/login", json={"email": "refresh@example.com", "password": "pass123"})
+    client.post(
+        "/api/v1/auth/register", json={"email": "refresh@example.com", "password": "pass123"}
+    )
+    login = client.post(
+        "/api/v1/auth/login", json={"email": "refresh@example.com", "password": "pass123"}
+    )
     refresh_token = login.json()["refresh_token"]
     response = client.post("/api/v1/auth/refresh", json={"refresh_token": refresh_token})
     assert response.status_code == 200
