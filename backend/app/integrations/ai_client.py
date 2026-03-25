@@ -37,8 +37,7 @@ class AIResponse:
 
 class AIClientBase(ABC):
     @abstractmethod
-    def chat(self, system: str, user: str, response_format: str = "json_object") -> AIResponse:
-        ...
+    def chat(self, system: str, user: str, response_format: str = "json_object") -> AIResponse: ...
 
 
 class OpenAIClient(AIClientBase):
@@ -80,6 +79,7 @@ def get_ai_client() -> AIClientBase:
 
 
 # ── Prompt builders ───────────────────────────────────────────────────────────
+
 
 def build_job_match_prompt(cv_text: str, job_text: str) -> tuple[str, str]:
     system = f"""{_HONESTY_RULES}
@@ -138,7 +138,9 @@ If you cannot determine a field, use null for optional fields or a best guess fo
     return system, user
 
 
-def build_cover_letter_prompt(cv_text: str, job_text: str, company: str, title: str, tone: str) -> tuple[str, str]:
+def build_cover_letter_prompt(
+    cv_text: str, job_text: str, company: str, title: str, tone: str
+) -> tuple[str, str]:
     system = f"""{_HONESTY_RULES}
 
 You are a professional cover letter writer. Write a personalised, {tone} cover letter for the candidate applying to {title} at {company}.

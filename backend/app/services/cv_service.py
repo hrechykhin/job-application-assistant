@@ -36,7 +36,9 @@ class CVService:
             storage.save(file_bytes, file_key)
         except Exception as e:
             logger.error("File storage failed: %s", e)
-            raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="File storage unavailable.")
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY, detail="File storage unavailable."
+            )
 
         return self.repo.create(
             user_id=user_id,

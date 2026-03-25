@@ -17,11 +17,17 @@ class CVRepository:
     def list_by_user(self, user_id: int, limit: int = 50, offset: int = 0) -> list[CV]:
         return list(
             self.db.scalars(
-                select(CV).where(CV.user_id == user_id).order_by(CV.created_at.desc()).limit(limit).offset(offset)
+                select(CV)
+                .where(CV.user_id == user_id)
+                .order_by(CV.created_at.desc())
+                .limit(limit)
+                .offset(offset)
             )
         )
 
-    def create(self, user_id: int, original_filename: str, file_key: str, extracted_text: str | None = None) -> CV:
+    def create(
+        self, user_id: int, original_filename: str, file_key: str, extracted_text: str | None = None
+    ) -> CV:
         cv = CV(
             user_id=user_id,
             original_filename=original_filename,

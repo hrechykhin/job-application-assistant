@@ -24,7 +24,9 @@ class JobService:
 
     def update(self, job_id: int, user_id: int, data: JobUpdate) -> Job:
         job = self.get_or_404(job_id, user_id)
-        return self.repo.update(job, **{k: v for k, v in data.model_dump().items() if v is not None})
+        return self.repo.update(
+            job, **{k: v for k, v in data.model_dump().items() if v is not None}
+        )
 
     def delete(self, job_id: int, user_id: int) -> None:
         job = self.get_or_404(job_id, user_id)

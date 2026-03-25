@@ -1,6 +1,3 @@
-import pytest
-
-
 def _register_and_login(client, email="app@example.com", password="secret123"):
     client.post("/api/v1/auth/register", json={"email": email, "password": password})
     r = client.post("/api/v1/auth/login", json={"email": email, "password": password})

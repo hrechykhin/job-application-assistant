@@ -50,6 +50,7 @@ class _TextExtractor(HTMLParser):
     def get_text(self) -> str:
         return " ".join(self._parts)
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -126,11 +127,21 @@ class AIService:
             response = client.chat(system, user_msg)
         except Exception as e:
             logger.error("AI job match failed: %s", e)
-            raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="AI service unavailable.")
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY, detail="AI service unavailable."
+            )
 
         result = JobMatchResult(**response.data)
-        self.analysis_repo.create(user_id, job_id, cv_id, AnalysisType.JOB_MATCH, response.data, PROMPT_VERSION)
-        self.usage_repo.create(user_id, AnalysisType.JOB_MATCH.value, response.model, response.prompt_tokens, response.completion_tokens)
+        self.analysis_repo.create(
+            user_id, job_id, cv_id, AnalysisType.JOB_MATCH, response.data, PROMPT_VERSION
+        )
+        self.usage_repo.create(
+            user_id,
+            AnalysisType.JOB_MATCH.value,
+            response.model,
+            response.prompt_tokens,
+            response.completion_tokens,
+        )
         return result
 
     def generate_cv_tailoring(self, user_id: int, cv_id: int, job_id: int) -> CVTailoringResult:
@@ -152,11 +163,21 @@ class AIService:
             response = client.chat(system, user_msg)
         except Exception as e:
             logger.error("AI CV tailoring failed: %s", e)
-            raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="AI service unavailable.")
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY, detail="AI service unavailable."
+            )
 
         result = CVTailoringResult(**response.data)
-        self.analysis_repo.create(user_id, job_id, cv_id, AnalysisType.CV_TAILORING, response.data, PROMPT_VERSION)
-        self.usage_repo.create(user_id, AnalysisType.CV_TAILORING.value, response.model, response.prompt_tokens, response.completion_tokens)
+        self.analysis_repo.create(
+            user_id, job_id, cv_id, AnalysisType.CV_TAILORING, response.data, PROMPT_VERSION
+        )
+        self.usage_repo.create(
+            user_id,
+            AnalysisType.CV_TAILORING.value,
+            response.model,
+            response.prompt_tokens,
+            response.completion_tokens,
+        )
         return result
 
     def import_job_from_url(self, user_id: int, url: str) -> JobImportPreview:
@@ -164,18 +185,25 @@ class AIService:
         self._check_quota(user_id)
 
         try:
-            response = httpx.get(url, timeout=10, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+            response = httpx.get(
+                url, timeout=10, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"}
+            )
             response.raise_for_status()
         except httpx.HTTPError as e:
             logger.warning("Failed to fetch URL %s: %s", url, e)
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Could not fetch the URL.")
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Could not fetch the URL."
+            )
 
         extractor = _TextExtractor()
         extractor.feed(response.text)
         page_text = extractor.get_text()
 
         if not page_text.strip():
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="No readable text found at the URL.")
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="No readable text found at the URL.",
+            )
 
         client = get_ai_client()
         try:
@@ -183,12 +211,22 @@ class AIService:
             ai_response = client.chat(system, user_msg)
         except Exception as e:
             logger.error("AI job import failed: %s", e)
-            raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="AI service unavailable.")
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY, detail="AI service unavailable."
+            )
 
-        self.usage_repo.create(user_id, "JOB_IMPORT", ai_response.model, ai_response.prompt_tokens, ai_response.completion_tokens)
+        self.usage_repo.create(
+            user_id,
+            "JOB_IMPORT",
+            ai_response.model,
+            ai_response.prompt_tokens,
+            ai_response.completion_tokens,
+        )
         return JobImportPreview(**ai_response.data)
 
-    def generate_cover_letter(self, user_id: int, cv_id: int, job_id: int, tone: str = "professional") -> CoverLetterResult:
+    def generate_cover_letter(
+        self, user_id: int, cv_id: int, job_id: int, tone: str = "professional"
+    ) -> CoverLetterResult:
         self._check_ai_enabled()
         self._check_quota(user_id)
 
@@ -205,9 +243,19 @@ class AIService:
             response = client.chat(system, user_msg)
         except Exception as e:
             logger.error("AI cover letter failed: %s", e)
-            raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="AI service unavailable.")
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY, detail="AI service unavailable."
+            )
 
         result = CoverLetterResult(**response.data)
-        self.analysis_repo.create(user_id, job_id, cv_id, AnalysisType.COVER_LETTER, response.data, PROMPT_VERSION)
-        self.usage_repo.create(user_id, AnalysisType.COVER_LETTER.value, response.model, response.prompt_tokens, response.completion_tokens)
+        self.analysis_repo.create(
+            user_id, job_id, cv_id, AnalysisType.COVER_LETTER, response.data, PROMPT_VERSION
+        )
+        self.usage_repo.create(
+            user_id,
+            AnalysisType.COVER_LETTER.value,
+            response.model,
+            response.prompt_tokens,
+            response.completion_tokens,
+        )
         return result

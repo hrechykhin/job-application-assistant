@@ -34,7 +34,9 @@ def upload_cv(
 
 
 @router.get("/download/{cv_id}")
-def download_cv(cv_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def download_cv(
+    cv_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+):
     svc = CVService(db)
     cv = svc.get_or_404(cv_id, current_user.id)
     file_path = Path(settings.STORAGE_PATH) / cv.file_key
@@ -44,7 +46,9 @@ def download_cv(cv_id: int, current_user: User = Depends(get_current_user), db: 
 
 
 @router.delete("/{cv_id}", status_code=204)
-def delete_cv(cv_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def delete_cv(
+    cv_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+):
     svc = CVService(db)
     svc.delete(cv_id, current_user.id)
     db.commit()

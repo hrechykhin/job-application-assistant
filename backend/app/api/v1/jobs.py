@@ -30,7 +30,9 @@ def list_jobs(current_user: User = Depends(get_current_user), db: Session = Depe
 
 
 @router.post("", response_model=JobRead, status_code=201)
-def create_job(body: JobCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def create_job(
+    body: JobCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+):
     svc = JobService(db)
     job = svc.create(current_user.id, body)
     db.commit()
@@ -39,7 +41,9 @@ def create_job(body: JobCreate, current_user: User = Depends(get_current_user), 
 
 
 @router.get("/{job_id}", response_model=JobRead)
-def get_job(job_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def get_job(
+    job_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+):
     svc = JobService(db)
     return svc.get_or_404(job_id, current_user.id)
 
@@ -59,7 +63,9 @@ def update_job(
 
 
 @router.delete("/{job_id}", status_code=204)
-def delete_job(job_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def delete_job(
+    job_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
+):
     svc = JobService(db)
     svc.delete(job_id, current_user.id)
     db.commit()
