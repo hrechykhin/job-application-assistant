@@ -30,6 +30,7 @@
 - **Cover letter generation** — full draft generated from your CV + job description
 - **Job URL import** — paste a job posting URL; AI extracts title, company, location, and description
 - **CV upload** — PDF and DOCX parsing; per-user file storage
+- **Profile page** — view and edit your name, see AI quota usage with a live progress bar and reset time
 - **JWT authentication** — access + refresh tokens; rate-limited login and registration
 - **AI spend controls** — per-user daily quota, input length limits, cached results skip the provider
 
