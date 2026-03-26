@@ -11,13 +11,12 @@ Usage:
 import sys
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy.orm import Session
-
 from app.core.security import hash_password
 from app.db.session import engine
 from app.models.application import Application, ApplicationStatus
 from app.models.job import Job
 from app.models.user import User
+from sqlalchemy.orm import Session
 
 DEMO_EMAIL = "demo@example.com"
 DEMO_PASSWORD = "Demo1234!"
@@ -200,7 +199,9 @@ def seed() -> None:
                 notes=notes,
                 interview_at=interview_at,
                 deadline=deadline,
-                applied_at=(_now - timedelta(days=14 - i)) if status != ApplicationStatus.SAVED else None,
+                applied_at=(_now - timedelta(days=14 - i))
+                if status != ApplicationStatus.SAVED
+                else None,
             )
             session.add(app)
 
@@ -210,7 +211,7 @@ def seed() -> None:
     for status, *_ in APP_CONFIG:
         status_counts[status] = status_counts.get(status, 0) + 1
 
-    print(f"Demo data created successfully.")
+    print("Demo data created successfully.")
     print(f"  User:  {DEMO_EMAIL} / {DEMO_PASSWORD}")
     print(f"  Jobs:  {len(SAMPLE_JOBS)}")
     print(f"  Applications: {len(APP_CONFIG)}")
