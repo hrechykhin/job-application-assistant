@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     # AI spend control
     AI_ENABLED: bool = True
-    AI_MAX_REQUESTS_PER_DAY: int = 50
+    AI_MAX_REQUESTS_PER_DAY: int = 15
     AI_MAX_CV_CHARS: int = 6000
     AI_MAX_JOB_CHARS: int = 4000
 

@@ -1,10 +1,15 @@
+from datetime import UTC, datetime, timedelta
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user
+from app.core.config import settings
 from app.db.session import get_db
 from app.models.user import User
+from app.repositories.ai_usage_log_repository import AIUsageLogRepository
 from app.schemas.ai import (
+    AIQuotaRead,
     CoverLetterRequest,
     CoverLetterResult,
     CVTailoringRequest,
@@ -15,6 +20,19 @@ from app.schemas.ai import (
 from app.services.ai_service import AIService
 
 router = APIRouter(prefix="/ai", tags=["ai"])
+
+
+@router.get("/quota", response_model=AIQuotaRead)
+def get_quota(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    repo = AIUsageLogRepository(db)
+    used = repo.count_today(current_user.id)
+    limit = settings.AI_MAX_REQUESTS_PER_DAY
+    now = datetime.now(UTC)
+    resets_at = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    return AIQuotaRead(used=used, limit=limit, remaining=max(0, limit - used), resets_at=resets_at)
 
 
 @router.post("/job-match", response_model=JobMatchResult)

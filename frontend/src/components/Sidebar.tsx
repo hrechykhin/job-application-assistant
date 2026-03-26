@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import {
   LayoutDashboard,
   FileText,
@@ -6,6 +6,7 @@ import {
   Kanban,
   Sparkles,
   LogOut,
+  User,
   X,
 } from 'lucide-react'
 import { useAuth } from '../auth/AuthContext'
@@ -16,6 +17,7 @@ const nav = [
   { to: '/jobs', label: 'Job Tracker', icon: Briefcase },
   { to: '/applications', label: 'Applications', icon: Kanban },
   { to: '/ai', label: 'AI Tools', icon: Sparkles },
+  { to: '/profile', label: 'Profile', icon: User },
 ]
 
 export function Sidebar({ onClose }: { onClose?: () => void }) {
@@ -26,7 +28,9 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
       <div className="flex items-center justify-between px-5 py-6">
         <div className="min-w-0">
           <span className="text-lg font-bold tracking-tight text-white">JobAssist</span>
-          <p className="mt-1 truncate text-xs text-slate-400">{user?.email}</p>
+          <Link to="/profile" className="block mt-1 truncate text-xs text-slate-400 hover:text-slate-200 transition-colors">
+            {user?.email}
+          </Link>
         </div>
         {onClose && (
           <button

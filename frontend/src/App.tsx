@@ -12,6 +12,7 @@ import { JobDetail } from './features/jobs/JobDetail'
 import { ApplicationBoard } from './features/applications/ApplicationBoard'
 import { ApplicationWorkspace } from './features/applications/ApplicationWorkspace'
 import { AITools } from './features/ai/AITools'
+import { ProfilePage } from './features/profile/ProfilePage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,6 +43,7 @@ export default function App() {
               <Route path="/applications" element={<ApplicationBoard />} />
               <Route path="/applications/:appId" element={<ApplicationWorkspace />} />
               <Route path="/ai" element={<AITools />} />
+              <Route path="/profile" element={<ProfilePage />} />
             </Route>
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
