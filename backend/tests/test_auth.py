@@ -52,17 +52,8 @@ def test_me_unauthenticated(client):
     assert response.status_code == 403
 
 
-def test_refresh_token(client, register_and_login, db):
-    from sqlalchemy import select
-    from app.models.user import User
-
-    client.post(
-        "/api/v1/auth/register", json={"email": "refresh@example.com", "password": "pass123"}
-    )
-    user = db.scalar(select(User).where(User.email == "refresh@example.com"))
-    user.is_active = True
-    db.commit()
-
+def test_refresh_token(client, register_and_login):
+    register_and_login("refresh@example.com", "pass123")
     login = client.post(
         "/api/v1/auth/login", json={"email": "refresh@example.com", "password": "pass123"}
     )
