@@ -31,7 +31,9 @@ def test_login_wrong_password(client):
 
 
 def test_login_unverified_returns_403(client):
-    client.post("/api/v1/auth/register", json={"email": "unverified@example.com", "password": "pass123"})
+    client.post(
+        "/api/v1/auth/register", json={"email": "unverified@example.com", "password": "pass123"}
+    )
     response = client.post(
         "/api/v1/auth/login", json={"email": "unverified@example.com", "password": "pass123"}
     )
