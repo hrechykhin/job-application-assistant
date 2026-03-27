@@ -1,24 +1,20 @@
+import json
 import logging
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+import urllib.request
 
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
+_RESEND_API_URL = "https://api.resend.com/emails"
+
 
 def send_verification_email(to_email: str, token: str) -> None:
     verify_url = f"{settings.FRONTEND_URL}/verify-email?token={token}"
 
-    if not settings.SMTP_HOST:
+    if not settings.SMTP_PASSWORD:
         logger.info("[DEV] Email verification URL for %s: %s", to_email, verify_url)
         return
-
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = "Verify your JobAssist account"
-    msg["From"] = settings.SMTP_FROM
-    msg["To"] = to_email
 
     text = (
         f"Hi,\n\n"
@@ -37,15 +33,30 @@ def send_verification_email(to_email: str, token: str) -> None:
         f"<p>If you didn't create an account, you can ignore this email.</p>"
     )
 
-    msg.attach(MIMEText(text, "plain"))
-    msg.attach(MIMEText(html, "html"))
+    payload = json.dumps(
+        {
+            "from": settings.SMTP_FROM,
+            "to": [to_email],
+            "subject": "Verify your JobAssist account",
+            "html": html,
+            "text": text,
+        }
+    ).encode()
+
+    req = urllib.request.Request(
+        _RESEND_API_URL,
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {settings.SMTP_PASSWORD}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
 
     try:
-        with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10) as server:
-            server.ehlo()
-            server.starttls()
-            server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
-            server.sendmail(settings.SMTP_FROM, to_email, msg.as_string())
-        logger.info("Verification email sent to %s", to_email)
+        with urllib.request.urlopen(req, timeout=10) as response:
+            logger.info(
+                "Verification email sent to %s (status %s)", to_email, response.status
+            )
     except Exception:
         logger.exception("Failed to send verification email to %s", to_email)
