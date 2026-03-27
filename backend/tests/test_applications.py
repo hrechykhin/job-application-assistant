@@ -1,15 +1,9 @@
-def _register_and_login(client, email="app@example.com", password="secret123"):
-    client.post("/api/v1/auth/register", json={"email": email, "password": password})
-    r = client.post("/api/v1/auth/login", json={"email": email, "password": password})
-    return r.json()["access_token"]
-
-
 def _auth_headers(token):
     return {"Authorization": f"Bearer {token}"}
 
 
-def test_create_and_list_job(client):
-    token = _register_and_login(client)
+def test_create_and_list_job(client, register_and_login):
+    token = register_and_login()
     job_payload = {
         "company_name": "Acme Corp",
         "title": "Backend Engineer",
@@ -26,8 +20,8 @@ def test_create_and_list_job(client):
     assert len(r.json()) == 1
 
 
-def test_create_application(client):
-    token = _register_and_login(client, "apps@example.com")
+def test_create_application(client, register_and_login):
+    token = register_and_login("apps@example.com")
     job = client.post(
         "/api/v1/jobs",
         json={"company_name": "TechCo", "title": "Dev", "description": "Looking for..."},
@@ -43,8 +37,8 @@ def test_create_application(client):
     assert r.json()["status"] == "SAVED"
 
 
-def test_update_application_status(client):
-    token = _register_and_login(client, "status@example.com")
+def test_update_application_status(client, register_and_login):
+    token = register_and_login("status@example.com")
     job = client.post(
         "/api/v1/jobs",
         json={"company_name": "Corp", "title": "Eng", "description": "..."},
@@ -65,8 +59,8 @@ def test_update_application_status(client):
     assert r.json()["status"] == "APPLIED"
 
 
-def test_application_stats(client):
-    token = _register_and_login(client, "stats@example.com")
+def test_application_stats(client, register_and_login):
+    token = register_and_login("stats@example.com")
     job = client.post(
         "/api/v1/jobs",
         json={"company_name": "X", "title": "Y", "description": "..."},

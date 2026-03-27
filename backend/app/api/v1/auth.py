@@ -43,9 +43,13 @@ def verify_email(token: str, db: Session = Depends(get_db)):
     repo = UserRepository(db)
     user = repo.get_by_verification_token(token)
     if not user or not user.verification_token_expires_at:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired verification link.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired verification link."
+        )
     if user.verification_token_expires_at < datetime.now(UTC):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired verification link.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired verification link."
+        )
     repo.mark_verified(user)
     db.commit()
     return {"message": "Email verified. You can now sign in."}

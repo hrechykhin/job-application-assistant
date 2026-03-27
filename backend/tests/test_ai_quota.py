@@ -10,12 +10,6 @@ from app.models.job import Job
 # ── fixtures ──────────────────────────────────────────────────────────────────
 
 
-def _register_and_login(client, email="ai@example.com", password="secret123"):
-    client.post("/api/v1/auth/register", json={"email": email, "password": password})
-    r = client.post("/api/v1/auth/login", json={"email": email, "password": password})
-    return r.json()["access_token"]
-
-
 def _auth_headers(token):
     return {"Authorization": f"Bearer {token}"}
 
@@ -72,8 +66,8 @@ def _make_mock_client(data: dict) -> MagicMock:
 # ── tests ─────────────────────────────────────────────────────────────────────
 
 
-def test_ai_disabled_returns_503(client, db):
-    token = _register_and_login(client)
+def test_ai_disabled_returns_503(client, db, register_and_login):
+    token = register_and_login()
     user_id = _get_user_id(client, token)
     cv = _create_cv(db, user_id)
     job = _create_job(db, user_id)
@@ -95,8 +89,8 @@ def test_ai_disabled_returns_503(client, db):
     assert "disabled" in r.json()["detail"].lower()
 
 
-def test_quota_exceeded_returns_429(client, db):
-    token = _register_and_login(client, "quota@example.com")
+def test_quota_exceeded_returns_429(client, db, register_and_login):
+    token = register_and_login("quota@example.com")
     user_id = _get_user_id(client, token)
     cv = _create_cv(db, user_id)
     job = _create_job(db, user_id)
@@ -118,8 +112,8 @@ def test_quota_exceeded_returns_429(client, db):
     assert "limit" in r.json()["detail"].lower()
 
 
-def test_cv_too_long_returns_422(client, db):
-    token = _register_and_login(client, "longcv@example.com")
+def test_cv_too_long_returns_422(client, db, register_and_login):
+    token = register_and_login("longcv@example.com")
     user_id = _get_user_id(client, token)
     cv = _create_cv(db, user_id, text="x" * 100)
     job = _create_job(db, user_id)
@@ -141,8 +135,8 @@ def test_cv_too_long_returns_422(client, db):
     assert "CV text too long" in r.json()["detail"]
 
 
-def test_job_too_long_returns_422(client, db):
-    token = _register_and_login(client, "longjob@example.com")
+def test_job_too_long_returns_422(client, db, register_and_login):
+    token = register_and_login("longjob@example.com")
     user_id = _get_user_id(client, token)
     cv = _create_cv(db, user_id)
     job = _create_job(db, user_id, description="y" * 100)
@@ -164,8 +158,8 @@ def test_job_too_long_returns_422(client, db):
     assert "Job description too long" in r.json()["detail"]
 
 
-def test_cached_result_does_not_log_usage(client, db):
-    token = _register_and_login(client, "cached@example.com")
+def test_cached_result_does_not_log_usage(client, db, register_and_login):
+    token = register_and_login("cached@example.com")
     user_id = _get_user_id(client, token)
     cv = _create_cv(db, user_id)
     job = _create_job(db, user_id)
@@ -200,8 +194,8 @@ def test_cached_result_does_not_log_usage(client, db):
     assert usage_after_second == 1  # no new log
 
 
-def test_successful_ai_call_logs_usage(client, db):
-    token = _register_and_login(client, "usagelog@example.com")
+def test_successful_ai_call_logs_usage(client, db, register_and_login):
+    token = register_and_login("usagelog@example.com")
     user_id = _get_user_id(client, token)
     cv = _create_cv(db, user_id)
     job = _create_job(db, user_id)
@@ -225,8 +219,8 @@ def test_successful_ai_call_logs_usage(client, db):
     assert log.completion_tokens == 50
 
 
-def test_cover_letter_logs_usage_no_cache(client, db):
-    token = _register_and_login(client, "coverletter@example.com")
+def test_cover_letter_logs_usage_no_cache(client, db, register_and_login):
+    token = register_and_login("coverletter@example.com")
     user_id = _get_user_id(client, token)
     cv = _create_cv(db, user_id)
     job = _create_job(db, user_id)
