@@ -1,3 +1,6 @@
+import secrets
+from datetime import UTC, datetime, timedelta
+
 from fastapi import HTTPException, status
 from jose import JWTError
 from sqlalchemy.orm import Session
@@ -12,6 +15,9 @@ from app.core.security import (
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
 from app.schemas.auth import TokenResponse
+from app.services.email_service import send_verification_email
+
+_VERIFICATION_TTL_HOURS = 24
 
 
 class AuthService:
@@ -28,6 +34,11 @@ class AuthService:
             hashed_password=hash_password(password),
             full_name=full_name,
         )
+        user.is_active = False
+        token = secrets.token_urlsafe(32)
+        expires_at = datetime.now(UTC) + timedelta(hours=_VERIFICATION_TTL_HOURS)
+        self.repo.set_verification_token(user, token, expires_at)
+        send_verification_email(email, token)
         return user
 
     def login(self, email: str, password: str) -> TokenResponse:
@@ -40,7 +51,8 @@ class AuthService:
             )
         if not user.is_active:
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail="Account is inactive."
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Email not verified. Please check your inbox.",
             )
         return TokenResponse(
             access_token=create_access_token(user.id),

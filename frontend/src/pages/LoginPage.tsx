@@ -17,8 +17,13 @@ export function LoginPage() {
     try {
       await login(email, password)
       navigate('/dashboard')
-    } catch {
-      setError('Invalid email or password.')
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status
+      if (status === 403) {
+        setError('Please verify your email before signing in. Check your inbox.')
+      } else {
+        setError('Invalid email or password.')
+      }
     } finally {
       setLoading(false)
     }

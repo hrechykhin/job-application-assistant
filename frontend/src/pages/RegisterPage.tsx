@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 
 export function RegisterPage() {
   const { register } = useAuth()
-  const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', password: '', full_name: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [field]: e.target.value }))
@@ -18,13 +18,38 @@ export function RegisterPage() {
     setLoading(true)
     try {
       await register(form.email, form.password, form.full_name || undefined)
-      navigate('/dashboard')
+      setSubmitted(true)
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
       setError(msg ?? 'Registration failed.')
     } finally {
       setLoading(false)
     }
+  }
+
+  if (submitted) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="w-full max-w-md">
+          <div className="rounded-xl border border-slate-200 bg-white px-8 py-10 shadow-sm text-center space-y-3">
+            <div className="text-4xl">✉</div>
+            <h1 className="text-2xl font-bold text-slate-900">Check your inbox</h1>
+            <p className="text-sm text-slate-500">
+              We sent a verification link to{' '}
+              <span className="font-medium text-slate-700">{form.email}</span>.
+              Click the link to activate your account.
+            </p>
+            <p className="text-xs text-slate-400">The link expires in 24 hours.</p>
+            <Link
+              to="/login"
+              className="mt-2 inline-block text-sm text-brand-600 hover:underline"
+            >
+              Back to sign in
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

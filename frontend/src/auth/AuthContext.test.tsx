@@ -8,6 +8,7 @@ vi.mock('../api/auth', () => ({
     me: vi.fn(),
     login: vi.fn(),
     register: vi.fn(),
+    verifyEmail: vi.fn(),
   },
 }))
 
@@ -17,6 +18,7 @@ const mockApi = authApi as {
   me: ReturnType<typeof vi.fn>
   login: ReturnType<typeof vi.fn>
   register: ReturnType<typeof vi.fn>
+  verifyEmail: ReturnType<typeof vi.fn>
 }
 
 const MOCK_USER = {
@@ -108,10 +110,8 @@ describe('useAuth', () => {
     expect(localStorage.getItem('refresh_token')).toBeNull()
   })
 
-  it('register calls register then login', async () => {
+  it('register calls the register API and does not log in automatically', async () => {
     mockApi.register.mockResolvedValueOnce(MOCK_USER)
-    mockApi.login.mockResolvedValueOnce(MOCK_TOKENS)
-    mockApi.me.mockResolvedValueOnce(MOCK_USER)
 
     const { result } = renderHook(() => useAuth(), { wrapper })
     await waitFor(() => expect(result.current.isLoading).toBe(false))
@@ -121,6 +121,7 @@ describe('useAuth', () => {
     })
 
     expect(mockApi.register).toHaveBeenCalledWith('test@example.com', 'password123', 'Test User')
-    expect(result.current.user).toEqual(MOCK_USER)
+    expect(mockApi.login).not.toHaveBeenCalled()
+    expect(result.current.user).toBeNull()
   })
 })

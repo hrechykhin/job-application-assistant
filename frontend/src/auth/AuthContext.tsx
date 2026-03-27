@@ -48,8 +48,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = useCallback(async (email: string, password: string, full_name?: string) => {
     await authApi.register(email, password, full_name)
-    await login(email, password)
-  }, [login])
+    // Do NOT auto-login — user must verify email first
+  }, [])
 
   return (
     <AuthContext.Provider value={{ user, isLoading, login, logout, register }}>

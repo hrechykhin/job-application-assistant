@@ -44,6 +44,16 @@ class Settings(BaseSettings):
     def cors_origins_list(self) -> list[str]:
         return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
 
+    # Email (SMTP) — leave SMTP_HOST empty to skip sending and log URLs instead (dev mode)
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_FROM: str = "noreply@jobassist.app"
+
+    # Frontend base URL — used to build email verification links
+    FRONTEND_URL: str = "http://localhost"
+
     # Logging
     LOG_LEVEL: str = "INFO"
     LOG_FORMAT: str = "text"  # "text" = dev pretty output, "json" = production
