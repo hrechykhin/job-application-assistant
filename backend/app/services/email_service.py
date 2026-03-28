@@ -49,14 +49,22 @@ def send_verification_email(to_email: str, token: str) -> None:
         headers={
             "Authorization": f"Bearer {settings.SMTP_PASSWORD}",
             "Content-Type": "application/json",
+            "User-Agent": "JobAssist/1.0",
         },
         method="POST",
     )
 
     try:
         with urllib.request.urlopen(req, timeout=10) as response:
-            logger.info(
-                "Verification email sent to %s (status %s)", to_email, response.status
-            )
+            logger.info("Verification email sent to %s (status %s)", to_email, response.status)
+    except urllib.error.HTTPError as e:
+        body = e.read().decode(errors="replace")
+        logger.error(
+            "Failed to send verification email to %s: HTTP %s %s — %s",
+            to_email,
+            e.code,
+            e.reason,
+            body,
+        )
     except Exception:
         logger.exception("Failed to send verification email to %s", to_email)

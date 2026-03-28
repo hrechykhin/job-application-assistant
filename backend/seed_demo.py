@@ -11,13 +11,12 @@ Usage:
 import sys
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy.orm import Session
-
 from app.core.security import hash_password
 from app.db.session import engine
 from app.models.application import Application, ApplicationStatus
 from app.models.job import Job
 from app.models.user import User
+from sqlalchemy.orm import Session
 
 DEMO_EMAIL = "demo@example.com"
 DEMO_PASSWORD = "Demo1234!"
