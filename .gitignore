@@ -24,3 +24,6 @@ backend/uploads/
 .DS_Store
 *.swp
 .vscode/
+
+# Local development notes
+DEVELOPMENT.md
