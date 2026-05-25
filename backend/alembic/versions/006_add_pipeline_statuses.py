@@ -25,9 +25,10 @@ def upgrade() -> None:
     op.execute(
         "ALTER TYPE applicationstatus ADD VALUE IF NOT EXISTS 'TEAM_INTERVIEW' AFTER 'TECHNICAL_INTERVIEW'"
     )
-    # Rename existing INTERVIEW rows to TEAM_INTERVIEW
+    # New enum values must be committed before they can be used in DML
+    op.execute("COMMIT")
     op.execute("UPDATE applications SET status = 'TEAM_INTERVIEW' WHERE status = 'INTERVIEW'")
-    # Rename the enum value (requires PostgreSQL 10+)
+    # Rename the old value so it can't be assigned to new rows (requires PostgreSQL 10+)
     op.execute("ALTER TYPE applicationstatus RENAME VALUE 'INTERVIEW' TO 'INTERVIEW_DEPRECATED'")
 
 
