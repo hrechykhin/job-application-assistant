@@ -11,7 +11,10 @@ import type { Application } from '../../types'
 const STATUS_CHART_COLORS: Record<string, string> = {
   SAVED: '#94a3b8',
   APPLIED: '#3b82f6',
-  INTERVIEW: '#f59e0b',
+  SCREENING: '#a855f7',
+  TEST_TASK: '#f97316',
+  TECHNICAL_INTERVIEW: '#06b6d4',
+  TEAM_INTERVIEW: '#f59e0b',
   OFFER: '#22c55e',
   REJECTED: '#ef4444',
 }
@@ -53,7 +56,7 @@ function getUpcoming(applications: Application[]): { app: Application; label: st
   for (const app of applications) {
     if (app.interview_at) {
       const d = new Date(app.interview_at)
-      if (d >= now && d <= cutoff) items.push({ app, label: 'Interview', date: app.interview_at, ts: d.getTime() })
+      if (d >= now && d <= cutoff) items.push({ app, label: 'Team Interview', date: app.interview_at, ts: d.getTime() })
     }
     if (app.deadline) {
       const d = new Date(app.deadline)

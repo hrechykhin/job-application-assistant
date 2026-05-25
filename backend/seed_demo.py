@@ -140,13 +140,13 @@ APP_CONFIG: list[tuple] = [
     ),
     (ApplicationStatus.APPLIED, None, None, None),
     (
-        ApplicationStatus.INTERVIEW,
+        ApplicationStatus.TEAM_INTERVIEW,
         "Technical screen done — went well. Waiting for system design round invite.",
         None,
         None,
     ),
     (
-        ApplicationStatus.INTERVIEW,
+        ApplicationStatus.TEAM_INTERVIEW,
         "Second interview scheduled. Prepare system design: distributed rate limiter.",
         _now + timedelta(days=5),
         None,

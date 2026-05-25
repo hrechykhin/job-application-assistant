@@ -10,7 +10,10 @@ from app.db.base import Base, TimestampMixin
 class ApplicationStatus(StrEnum):
     SAVED = "SAVED"
     APPLIED = "APPLIED"
-    INTERVIEW = "INTERVIEW"
+    SCREENING = "SCREENING"
+    TEST_TASK = "TEST_TASK"
+    TECHNICAL_INTERVIEW = "TECHNICAL_INTERVIEW"
+    TEAM_INTERVIEW = "TEAM_INTERVIEW"
     OFFER = "OFFER"
     REJECTED = "REJECTED"
 

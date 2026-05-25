@@ -10,7 +10,7 @@ import { ErrorMessage } from '../../components/ErrorMessage'
 import { STATUS_LABELS } from '../../utils/formatters'
 import type { ApplicationStatus, JobMatchResult, CVTailoringResult, CoverLetterResult } from '../../types'
 
-const STATUSES: ApplicationStatus[] = ['SAVED', 'APPLIED', 'INTERVIEW', 'OFFER', 'REJECTED']
+const STATUSES: ApplicationStatus[] = ['SAVED', 'APPLIED', 'SCREENING', 'TEST_TASK', 'TECHNICAL_INTERVIEW', 'TEAM_INTERVIEW', 'OFFER', 'REJECTED']
 const AI_TABS = ['Job Match', 'CV Tailoring', 'Cover Letter'] as const
 type AiTab = typeof AI_TABS[number]
 

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { formatDate, formatPercent, STATUS_LABELS, STATUS_COLORS } from './formatters'
 
-const ALL_STATUSES = ['SAVED', 'APPLIED', 'INTERVIEW', 'OFFER', 'REJECTED']
+const ALL_STATUSES = ['SAVED', 'APPLIED', 'SCREENING', 'TEST_TASK', 'TECHNICAL_INTERVIEW', 'TEAM_INTERVIEW', 'OFFER', 'REJECTED']
 
 describe('formatDate', () => {
   it('formats an ISO datetime string', () => {

@@ -8,12 +8,15 @@ import { formatDate, STATUS_LABELS } from '../../utils/formatters'
 import type { Application, ApplicationStatus } from '../../types'
 import { Trash2, ChevronRight, Calendar } from 'lucide-react'
 
-const COLUMNS: ApplicationStatus[] = ['SAVED', 'APPLIED', 'INTERVIEW', 'OFFER', 'REJECTED']
+const COLUMNS: ApplicationStatus[] = ['SAVED', 'APPLIED', 'SCREENING', 'TEST_TASK', 'TECHNICAL_INTERVIEW', 'TEAM_INTERVIEW', 'OFFER', 'REJECTED']
 
 const COLUMN_STYLES: Record<ApplicationStatus, string> = {
   SAVED: 'border-slate-300 bg-slate-50',
   APPLIED: 'border-blue-300 bg-blue-50',
-  INTERVIEW: 'border-yellow-300 bg-yellow-50',
+  SCREENING: 'border-purple-300 bg-purple-50',
+  TEST_TASK: 'border-orange-300 bg-orange-50',
+  TECHNICAL_INTERVIEW: 'border-cyan-300 bg-cyan-50',
+  TEAM_INTERVIEW: 'border-yellow-300 bg-yellow-50',
   OFFER: 'border-green-300 bg-green-50',
   REJECTED: 'border-red-300 bg-red-50',
 }
@@ -21,7 +24,10 @@ const COLUMN_STYLES: Record<ApplicationStatus, string> = {
 const COLUMN_DRAG_OVER_STYLES: Record<ApplicationStatus, string> = {
   SAVED: 'border-slate-400 bg-slate-100 ring-2 ring-slate-300',
   APPLIED: 'border-blue-400 bg-blue-100 ring-2 ring-blue-300',
-  INTERVIEW: 'border-yellow-400 bg-yellow-100 ring-2 ring-yellow-300',
+  SCREENING: 'border-purple-400 bg-purple-100 ring-2 ring-purple-300',
+  TEST_TASK: 'border-orange-400 bg-orange-100 ring-2 ring-orange-300',
+  TECHNICAL_INTERVIEW: 'border-cyan-400 bg-cyan-100 ring-2 ring-cyan-300',
+  TEAM_INTERVIEW: 'border-yellow-400 bg-yellow-100 ring-2 ring-yellow-300',
   OFFER: 'border-green-400 bg-green-100 ring-2 ring-green-300',
   REJECTED: 'border-red-400 bg-red-100 ring-2 ring-red-300',
 }
@@ -29,15 +35,21 @@ const COLUMN_DRAG_OVER_STYLES: Record<ApplicationStatus, string> = {
 const HEADER_STYLES: Record<ApplicationStatus, string> = {
   SAVED: 'text-slate-700',
   APPLIED: 'text-blue-700',
-  INTERVIEW: 'text-yellow-700',
+  SCREENING: 'text-purple-700',
+  TEST_TASK: 'text-orange-700',
+  TECHNICAL_INTERVIEW: 'text-cyan-700',
+  TEAM_INTERVIEW: 'text-yellow-700',
   OFFER: 'text-green-700',
   REJECTED: 'text-red-700',
 }
 
 const NEXT_STATUS: Partial<Record<ApplicationStatus, ApplicationStatus>> = {
   SAVED: 'APPLIED',
-  APPLIED: 'INTERVIEW',
-  INTERVIEW: 'OFFER',
+  APPLIED: 'SCREENING',
+  SCREENING: 'TEST_TASK',
+  TEST_TASK: 'TECHNICAL_INTERVIEW',
+  TECHNICAL_INTERVIEW: 'TEAM_INTERVIEW',
+  TEAM_INTERVIEW: 'OFFER',
 }
 
 function AppCard({
@@ -226,7 +238,7 @@ export function ApplicationBoard() {
       )}
 
       <div className="-mx-1 overflow-x-auto px-1 pb-2">
-      <div className="grid grid-cols-5 gap-3 pb-4 min-w-[700px]">
+      <div className="grid grid-cols-8 gap-3 pb-4 min-w-[1100px]">
         {COLUMNS.map((status) => {
           const isOver = overColumn === status
           return (

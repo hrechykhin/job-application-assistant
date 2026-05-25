@@ -27,7 +27,7 @@ export interface Job {
   updated_at: string
 }
 
-export type ApplicationStatus = 'SAVED' | 'APPLIED' | 'INTERVIEW' | 'OFFER' | 'REJECTED'
+export type ApplicationStatus = 'SAVED' | 'APPLIED' | 'SCREENING' | 'TEST_TASK' | 'TECHNICAL_INTERVIEW' | 'TEAM_INTERVIEW' | 'OFFER' | 'REJECTED'
 
 export interface Application {
   id: number
